@@ -1,0 +1,8 @@
+[package]
+name = "math_tools"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+terminal_tools = { git = "ssh://git@github.com/ShawnSmith7/terminal_tools.git" }
