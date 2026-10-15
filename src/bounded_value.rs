@@ -103,11 +103,14 @@ impl<B: Bounds> BoundedValue<B> {
         B: Debug,
         B::Val: Debug,
     {
-        Self::new_checked(val).expect("Invalid val passed to BoundedValue::new")
-    }
-    
-    pub unsafe fn new_unchecked(val: B::Val) -> Self {
-        Self(val)
+        #[cfg(debug_assertions)]
+        {
+            Self::new_checked(val).unwrap()
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            Self(val)
+        }
     }
 
     pub fn get(&self) -> &B::Val {

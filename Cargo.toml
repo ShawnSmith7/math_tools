@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 serde = { version = "1.0.229", features = ["derive"] }
-terminal_tools = { git = "ssh://git@github.com/ShawnSmith7/terminal_tools.git" }
+terminal_tools = { git = "https://github.com/ShawnSmith7/terminal_tools.git" }
