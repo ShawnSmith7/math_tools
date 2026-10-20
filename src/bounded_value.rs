@@ -8,7 +8,7 @@ use serde::{Serialize, Deserialize};
 use Bound::*;
 use BoundedValueError::*;
 
-pub type Result<T, B> = result::Result<T, BoundedValueError<B>>;
+pub type Result<B, T = ()> = result::Result<T, BoundedValueError<B>>;
 
 pub trait Bounds {
     type Val: PartialOrd + Clone;
@@ -92,7 +92,7 @@ where
 }
 
 impl<B: Bounds> BoundedValue<B> {
-    pub fn new_checked(val: B::Val) -> Result<Self, B> {
+    pub fn new_checked(val: B::Val) -> Result<B, Self> {
         if !B::contains(&val) {
             return Err(OutOfBounds(val));
         }
@@ -141,7 +141,7 @@ where
 {
     type Error = BoundedValueError<C>;
 
-    fn try_from(val: &BoundedValue<B>) -> Result<Self, C> {
+    fn try_from(val: &BoundedValue<B>) -> Result<C, Self> {
         match (&B::LOWER, &B::UPPER, &C::LOWER, &C::UPPER) {
             (
                 Included(b_lower),
