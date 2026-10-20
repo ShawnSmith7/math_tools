@@ -1,4 +1,4 @@
-use std::{fmt, marker, ops, str};
+use std::{fmt, marker, ops, str, result};
 use fmt::{Debug, Display, Formatter};
 use marker::PhantomData;
 use ops::{Add, Bound, Div, Mul, Sub};
@@ -7,6 +7,8 @@ use terminal_tools::ParseError;
 use serde::{Serialize, Deserialize};
 use Bound::*;
 use BoundedValueError::*;
+
+pub type Result<T, B> = result::Result<T, BoundedValueError<B>>;
 
 pub trait Bounds {
     type Val: PartialOrd + Clone;
@@ -82,7 +84,7 @@ where
 {
     type Err = ParseError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> result::Result<Self, Self::Err> {
         Self::new_checked(s.parse()
             .map_err(|_| ParseError(s.to_string()))?)
             .map_err(|_| ParseError(s.to_string()))
@@ -90,7 +92,7 @@ where
 }
 
 impl<B: Bounds> BoundedValue<B> {
-    pub fn new_checked(val: B::Val) -> Result<Self, BoundedValueError<B>> {
+    pub fn new_checked(val: B::Val) -> Result<Self, B> {
         if !B::contains(&val) {
             return Err(OutOfBounds(val));
         }
@@ -139,7 +141,7 @@ where
 {
     type Error = BoundedValueError<C>;
 
-    fn try_from(val: &BoundedValue<B>) -> Result<Self, BoundedValueError<C>> {
+    fn try_from(val: &BoundedValue<B>) -> Result<Self, C> {
         match (&B::LOWER, &B::UPPER, &C::LOWER, &C::UPPER) {
             (
                 Included(b_lower),
